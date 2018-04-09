@@ -35,18 +35,34 @@ DataManager.loadGameWithoutRescue = function(savefileId) {
     }
 };
 
-DataManager.loadGameWithoutRescue(1);
 
 StorageManager.load = function(savefileId) {
     if (savefileId > 0){
-    $.get("http://127.0.0.1:8000/datamanager/load/", function(data){
-        let parsedJson = JSON.parse(data)
-        console.log(parsedJson)
-      if (data === null) return; //Loads new game if no data
-       DataManager.createGameObjects();
-       DataManager.extractSaveContents(JsonEx.parse(parsedJson));
-    }).fail(function(){
-      window.alert("Cloudsave Failed!");
-    });
+        $.get("http://127.0.0.1:8000/datamanager/load/", function(data){
+            if (data === null) return; //Loads new game if no data
+            console.log(JsonEx.parse(data))
+            DataManager.createGameObjects();
+            DataManager.extractSaveContents(JsonEx.parse(data));
+        }).fail(function(){
+            window.alert("Cloudsave Failed!");
+        });
     }
-  };
+};
+
+
+DataManager.loadDatabase = function() {
+    var test = this.isBattleTest() || this.isEventTest();
+    var prefix = test ? 'Test_' : '';
+    for (var i = 0; i < this._databaseFiles.length; i++) {
+        var name = this._databaseFiles[i].name;
+        var src = this._databaseFiles[i].src;
+        this.loadDataFile(name, prefix + src);
+    }
+    if (this.isEventTest()) {
+        this.loadDataFile('$testEvent', prefix + 'Event.json');
+    }
+    StorageManager.load(1)
+};
+
+
+
