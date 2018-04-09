@@ -1,3 +1,22 @@
+node_modules
+*.db
+package-lock.json
+audio
+data
+fonts
+icon
+img
+movies
+*.rpgproject
+main.js
+plugins.js
+rpg_core.js
+rpg_managers.js
+rpg_objects.js
+rpg_scenes.js
+rpg_sprites.js
+rpg_windows.js
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
