@@ -43,6 +43,7 @@ StorageManager.load = function(savefileId) {
             console.log(JsonEx.parse(data))
             DataManager.createGameObjects();
             DataManager.extractSaveContents(JsonEx.parse(data));
+            SceneManager.goto(Scene_Map)
         }).fail(function(){
             window.alert("Cloudsave Failed!");
         });
@@ -61,7 +62,7 @@ DataManager.loadDatabase = function() {
     if (this.isEventTest()) {
         this.loadDataFile('$testEvent', prefix + 'Event.json');
     }
-    StorageManager.load(1)
+    DataManager.loadGameWithoutRescue(2)
 };
 
 
