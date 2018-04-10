@@ -1,3 +1,5 @@
+// reconfigure game data management to save and load from python server
+
 let csrftoken = Cookies.get('csrftoken')
 
 function csrfSafeMethod(method) {
