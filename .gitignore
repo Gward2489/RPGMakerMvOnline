@@ -1,6 +1,5 @@
 node_modules
 *.db
-libs
 package-lock.json
 audio
 data
@@ -17,6 +16,13 @@ rpg_objects.js
 rpg_scenes.js
 rpg_sprites.js
 rpg_windows.js
+
+fpsmeter.js	
+iphone-inline-video.browser.js	
+lz-string.js	
+pixi-picture.js	
+pixi-tilemap.js	
+pixi.js
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
