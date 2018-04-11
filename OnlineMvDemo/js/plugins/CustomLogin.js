@@ -90,37 +90,21 @@ MMO_Scene_Title.prototype.connectAttempt = function(){
     if (password.length === 0)
         return this.displayError("You must provide a password!");
 
-    shapwd = CryptoJS.SHA1(password+$gameNetwork._firstHash).toString(CryptoJS.enc.Hex);
     this.displayInfo('Connecting <i class="fa fa-spin fa-spinner"></i>');
-    $.post($gameNetwork._serverURL+'/login', {
-                username: username,
-                password: shapwd
-  }).done(function (data) {
-            if (data.err)
-                    return that.displayError("Error : "+data.err);
-    if (data.temp){
-      //Make Password reset form
-      $gameSystem._tempPasswordName = data.name;
-      $gameSystem._tempPasswordHash = data.temp;
-      that.createResetPasswordForm();
-    }
-                if (data.token) {
-                    $gameNetwork._token = data.token;
-                    var ioFlag = String(Nasty.Parameters['socket.io connection']);
-                    $("#ErrorPrinter").fadeOut({duration: 1000}).html("");
-        if (ioFlag==='true'){
-                        $gameNetwork.connectSocket('main','/');
-          $gameNetwork._socket.main.on('firstShutDown',function(data){
-            $gameSwitches.setValue(Number(Nasty.Parameters['Switch on First Shutdown']),true);
-          });
-          $gameNetwork._socket.main.on('secondShutDown',function(data){
-            $gameSwitches.setValue(Number(Nasty.Parameters['Switch on Second Shutdown']),true);
-          });
-                    }
-        $gameNetwork.connectSocketsAfterLogin();
-        that.fadeOutAll();
-                  SceneManager.goto(Scene_Map);
-                    return that.displayInfo("Ok : "+data.msg);
-                }
+    $.ajax({
+        url: "http://127.0.0.1:8000/datamanager/login/",
+        type: "POST",
+        data: { "userName": username, "password": password },
+        dataType: "application/json"
+    }).done(function (data) {
+        if (data.err)
+            return that.displayError("Error : " + data.err);
+        if (data) {
+            //need logic to take save data out of jason and pass it into
+            //datamanager.loadgamewithoutrescue(savefileId)
+            that.fadeOutAll();
+            SceneManager.goto(Scene_Map);
+            return that.displayInfo("Ok : "+data.msg);
+        }
   });
 };
