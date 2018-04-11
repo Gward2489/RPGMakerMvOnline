@@ -64,7 +64,7 @@ DataManager.loadDatabase = function() {
     if (this.isEventTest()) {
         this.loadDataFile('$testEvent', prefix + 'Event.json');
     }
-    DataManager.loadGameWithoutRescue(2)
+    // DataManager.loadGameWithoutRescue(2)
 };
 
 

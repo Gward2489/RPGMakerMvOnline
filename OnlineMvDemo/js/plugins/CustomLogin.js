@@ -25,7 +25,7 @@ MMO_Scene_Title.prototype.start = function() {
     SceneManager.clearStack();
     this.playTitleMusic();
     this.startFadeIn(this.fadeSpeed(), false);
-    this.createLoginForm();
+    this.renderLogin();
 };
 
 MMO_Scene_Title.prototype.update = function() {
@@ -70,12 +70,14 @@ MMO_Scene_Title.prototype.renderLogin = function() {
         }
     });
 
-    $("#inputUsername").tap(function(){$("#inputUsername").focus();});
-    $("#inputPassword").tap(function(){$("#inputPassword").focus();});
-    $("#btnConnect").bind("click touchstart",function(){titleObj.connectAttempt();});
-    $("#btnRegister").bind("click touchstart",function(){titleObj.createRegistrationForm();});
-    $("#btnForgotPassword").bind("click touchstart",function(){titleObj.createLostPasswordForm();});
-    $("#inputUsername").focus();
+    // need to logic to get form values and button functions
+
+    // $("#inputUsername").tap(function(){$("#inputUsername").focus();});
+    // $("#inputPassword").tap(function(){$("#inputPassword").focus();});
+    // $("#btnConnect").bind("click touchstart",function(){titleObj.connectAttempt();});
+    // $("#btnRegister").bind("click touchstart",function(){titleObj.createRegistrationForm();});
+    // $("#btnForgotPassword").bind("click touchstart",function(){titleObj.createLostPasswordForm();});
+    // $("#inputUsername").focus();
 
 };
 
@@ -107,4 +109,105 @@ MMO_Scene_Title.prototype.connectAttempt = function(){
             return that.displayInfo("Ok : "+data.msg);
         }
   });
+};
+
+//----------------------------------------------------------------------------
+//
+// Override of Scene_Boot.start, for calling our own Scene_Title!
+//
+Scene_Boot.prototype.start = function() {
+    Scene_Base.prototype.start.call(this);
+    SoundManager.preloadImportantSounds();
+    if (DataManager.isBattleTest()) {
+        DataManager.setupBattleTest();
+        SceneManager.goto(Scene_Battle);
+    } else if (DataManager.isEventTest()) {
+        DataManager.setupEventTest();
+        SceneManager.goto(Scene_Map);
+    } else {
+        this.checkPlayerLocation();
+        DataManager.setupNewGame();
+        SceneManager.goto(MMO_Scene_Title);
+    }
+    this.updateDocumentTitle();
+};
+//-----------------------------------------------------------------------------
+//
+// Overriding 'Input._onKeyDown' to pass 'event' as parameter
+// to 'Input._shouldPreventDefault'
+//
+Input._onKeyDown = function(event) {
+    if (this._shouldPreventDefault(event)) {
+        event.preventDefault();
+    }
+    if (event.keyCode === 144) {    // Numlock
+        this.clear();
+    }
+    var buttonName = this.keyMapper[event.keyCode];
+    if (buttonName) {
+        this._currentState[buttonName] = true;
+    }
+};
+
+MMO_Scene_Title.prototype.createBackground = function() {
+    this._backSprite1 = new Sprite(ImageManager.loadTitle1($dataSystem.title1Name));
+    this._backSprite2 = new Sprite(ImageManager.loadTitle2($dataSystem.title2Name));
+    this.addChild(this._backSprite1);
+    this.addChild(this._backSprite2);
+        this.centerSprite(this._backSprite1);
+    this.centerSprite(this._backSprite2);
+        this.createForeground();
+};
+
+MMO_Scene_Title.prototype.createForeground = function() {
+    this._gameTitleSprite = new Sprite(new Bitmap(Graphics.width, Graphics.height));
+    this.addChild(this._gameTitleSprite);
+    if ($dataSystem.optDrawTitle) {
+        this.drawGameTitle();
+    }
+};
+
+MMO_Scene_Title.prototype.drawGameTitle = function() {
+    var x = 20;
+    var y = Graphics.height / 4;
+    var maxWidth = Graphics.width - x * 2;
+    var text = $dataSystem.gameTitle;
+    this._gameTitleSprite.bitmap.outlineColor = 'black';
+    this._gameTitleSprite.bitmap.outlineWidth = 8;
+    this._gameTitleSprite.bitmap.fontSize = 72;
+    this._gameTitleSprite.bitmap.drawText(text, x, y, maxWidth, 48, 'center');
+};
+
+MMO_Scene_Title.prototype.centerSprite = function(sprite) {
+    sprite.x = Graphics.width / 2;
+    sprite.y = Graphics.height / 2;
+    sprite.anchor.x = 0.5;
+    sprite.anchor.y = 0.5;
+};
+
+MMO_Scene_Title.prototype.playTitleMusic = function() {
+    AudioManager.playBgm($dataSystem.titleBgm);
+    AudioManager.stopBgs();
+    AudioManager.stopMe();
+};
+
+//-----------------------------------------------------------------------------
+//
+// Overriding Input._shouldPreventDefault to allow the use of the 'backspace key'
+// in input forms.
+//
+Input._shouldPreventDefault = function(e) {
+    switch (e.keyCode) {
+	    case 8:     // backspace
+	    	if ($(e.target).is("input, textarea"))
+	    		break;
+	    case 33:    // pageup
+	    case 34:    // pagedown
+	    case 37:    // left arrow
+	    case 38:    // up arrow
+	    case 39:    // right arrow
+	    case 40:    // down arrow
+	        return true;
+    }
+    return false;
 };
