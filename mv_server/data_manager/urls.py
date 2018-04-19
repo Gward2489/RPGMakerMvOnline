@@ -6,4 +6,6 @@ app_name = 'data_manager'
 urlpatterns = [
     path('save/', views.save, name='save'),
     path('load/', views.load, name='load'),
+    path('login/', views.login, name='login'),
+    
 ]

@@ -57,17 +57,15 @@ MMO_Scene_Title.prototype.renderLogin = function() {
                 '</div><br>'+
                 '<button id="btnConnect" class="btn btn-primary">Connect</button>'+
                 '<button id="btnRegister" class="btn btn-default">Register</button>'+
-      '<button id="btnForgotPassword" class="btn btn-link btn-sm">Forgot Password?</button>'+
+        '<button id="btnForgotPassword" class="btn btn-link btn-sm">Forgot Password?</button>'+
             '</div>'+
         '</div>'
     );
 
     //Bind commands
     let titleObj = this;
-    $(".login-input").keypress(function(e){
-        if (e.which == 13) { //enter
+    $("#btnConnect").click(function(e){
             titleObj.connectAttempt();
-        }
     });
 
     // need to logic to get form values and button functions
@@ -92,23 +90,21 @@ MMO_Scene_Title.prototype.connectAttempt = function(){
     if (password.length === 0)
         return this.displayError("You must provide a password!");
 
-    this.displayInfo('Connecting <i class="fa fa-spin fa-spinner"></i>');
     $.ajax({
         url: "http://127.0.0.1:8000/datamanager/login/",
         type: "POST",
-        data: { "userName": username, "password": password },
-        dataType: "application/json"
-    }).done(function (data) {
-        if (data.err)
-            return that.displayError("Error : " + data.err);
-        if (data) {
+        data: { "username": username, "password": password },
+        // dataType: "application/json",
+    }).then(function (data) {
+        console.log("hello")
             //need logic to take save data out of jason and pass it into
             //datamanager.loadgamewithoutrescue(savefileId)
-            that.fadeOutAll();
+            titleObj.fadeOutAll();
+            $("#ErrorPrinter").html('')
             SceneManager.goto(Scene_Map);
-            return that.displayInfo("Ok : "+data.msg);
-        }
-  });
+  }).fail(function(err) {
+      console.log(err)
+  })
 };
 
 //----------------------------------------------------------------------------

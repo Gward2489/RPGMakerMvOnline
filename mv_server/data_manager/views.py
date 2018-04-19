@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def save(request):
@@ -26,3 +27,16 @@ def load(request):
         return HttpResponse(data)
     else:
         return HttpResponseNotAllowed(['GET'])
+
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        user_name = request.POST['username']
+        password = request.POST['password']
+
+        user = User.objects.create_user(user_name, None, password)
+        user.save()
+
+        return HttpResponse(user.id)
+
+
